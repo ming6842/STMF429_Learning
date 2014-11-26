@@ -37,13 +37,6 @@
   * @{
   */
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private macro -------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-static void TP_Config(void);
-
 /* Private functions ---------------------------------------------------------*/
 
 /**
@@ -53,8 +46,9 @@ static void TP_Config(void);
   */
 int main(void)
 {
-  uint16_t linenum = 0;
-  static TP_STATE* TP_State; 
+
+  char lcd_text_buff[100];
+  uint32_t test_int32 =0;
     
   /*!< At this stage the microcontroller clock setting is already configured, 
   this is done through SystemInit() function which is called from startup
@@ -75,67 +69,23 @@ int main(void)
   /* Set LCD foreground layer */
   LCD_SetLayer(LCD_FOREGROUND_LAYER);
   
-  /* Touch Panel configuration */
-  TP_Config();
-    
+  /* Clear the LCD */ 
+  LCD_Clear(LCD_COLOR_WHITE);
+
+  LCD_SetFont(&Font8x12);
+  LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
+  LCD_DisplayStringLine(LINE(2), (uint8_t*)" Ming6842 @ github");
+  LCD_DisplayStringLine(LINE(3), (uint8_t*)" -------------------");
+  LCD_DisplayStringLine(LINE(4), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+
+
   while (1)
   {
- 
-    TP_State = IOE_TP_GetState();
-    
-    if((TP_State->TouchDetected) && ((TP_State->Y < 245) && (TP_State->Y >= 3)))
-    {
-      if((TP_State->X >= 237) || (TP_State->X < 3))
-      {}     
-      else
-      {
-        LCD_DrawFullCircle(TP_State->X, TP_State->Y, 3);
-      }
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 280) && (TP_State->Y >= 250) && (TP_State->X >= 5) && (TP_State->X <= 35))
-    {
-      LCD_SetTextColor(LCD_COLOR_BLUE2);
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 280) && (TP_State->Y >= 250) && (TP_State->X >= 40) && (TP_State->X <= 70))
-    {
-      LCD_SetTextColor(LCD_COLOR_CYAN); 
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 280) && (TP_State->Y >= 250) && (TP_State->X >= 75) && (TP_State->X <= 105))
-    {
-      LCD_SetTextColor(LCD_COLOR_YELLOW); 
-    }      
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 288) && (TP_State->X >= 5) && (TP_State->X <= 35))
-    {
-      LCD_SetTextColor(LCD_COLOR_RED);
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 288) && (TP_State->X >= 40) && (TP_State->X <= 70))
-    {
-      LCD_SetTextColor(LCD_COLOR_BLUE); 
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 288) && (TP_State->X >= 75) && (TP_State->X <= 105))
-    {
-      LCD_SetTextColor(LCD_COLOR_GREEN); 
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 288) && (TP_State->X >= 110) && (TP_State->X <= 140))
-    {
-      LCD_SetTextColor(LCD_COLOR_BLACK); 
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 288) && (TP_State->X >= 145) && (TP_State->X <= 175))
-    {
-      LCD_SetTextColor(LCD_COLOR_MAGENTA); 
-    }
-    else if ((TP_State->TouchDetected) && (TP_State->Y <= 318) && (TP_State->Y >= 270) && (TP_State->X >= 180) && (TP_State->X <= 230))
-    {
-      LCD_SetFont(&Font8x8);
-      for(linenum = 0; linenum < 31; linenum++)
-      {
-        LCD_ClearLine(LINE(linenum));
-      }
-    }
-    else
-    {
-    }
+      sprintf(lcd_text_buff,"LOLOLOLOLOLOLL %ld",test_int32);
+      LCD_DisplayStringLine(LINE(7), (uint8_t*)lcd_text_buff);
+      test_int32++;
   }
+  
 }
 
 /**
@@ -143,55 +93,6 @@ int main(void)
 * @param  None
 * @retval None
 */
-static void TP_Config(void)
-{
-  /* Clear the LCD */ 
-  LCD_Clear(LCD_COLOR_WHITE);
-  
-  /* Configure the IO Expander */
-  if (IOE_Config() == IOE_OK)
-  {   
-    LCD_SetFont(&Font8x8);
-    LCD_DisplayStringLine(LINE(32), (uint8_t*)"              Touch Panel Paint     ");
-    LCD_DisplayStringLine(LINE(34), (uint8_t*)"              Example               ");
-    LCD_SetTextColor(LCD_COLOR_BLUE2); 
-    LCD_DrawFullRect(5, 250, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_CYAN); 
-    LCD_DrawFullRect(40, 250, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_YELLOW); 
-    LCD_DrawFullRect(75, 250, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_RED); 
-    LCD_DrawFullRect(5, 288, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_BLUE); 
-    LCD_DrawFullRect(40, 288, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_GREEN); 
-    LCD_DrawFullRect(75, 288, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_MAGENTA); 
-    LCD_DrawFullRect(145, 288, 30, 30);
-    LCD_SetTextColor(LCD_COLOR_BLACK); 
-    LCD_DrawFullRect(110, 288, 30, 30);
-    LCD_DrawRect(180, 270, 48, 50);
-    LCD_SetFont(&Font16x24);
-    LCD_DisplayChar(LCD_LINE_12, 195, 0x43);
-    LCD_DrawLine(0, 248, 240, LCD_DIR_HORIZONTAL);
-    LCD_DrawLine(0, 284, 180, LCD_DIR_HORIZONTAL);
-    LCD_DrawLine(1, 248, 71, LCD_DIR_VERTICAL);
-    LCD_DrawLine(37, 248, 71, LCD_DIR_VERTICAL);
-    LCD_DrawLine(72, 248, 71, LCD_DIR_VERTICAL);
-    LCD_DrawLine(107, 248, 71, LCD_DIR_VERTICAL);
-    LCD_DrawLine(142, 284, 36, LCD_DIR_VERTICAL);
-    LCD_DrawLine(0, 319, 240, LCD_DIR_HORIZONTAL);
-  }  
-  else
-  {
-    LCD_Clear(LCD_COLOR_RED);
-    LCD_SetTextColor(LCD_COLOR_BLACK); 
-    LCD_DisplayStringLine(LCD_LINE_6,(uint8_t*)"   IOE NOT OK      ");
-    LCD_DisplayStringLine(LCD_LINE_7,(uint8_t*)"Reset the board   ");
-    LCD_DisplayStringLine(LCD_LINE_8,(uint8_t*)"and try again     ");
-  }
-}
-
 #ifdef  USE_FULL_ASSERT
 
 /**
