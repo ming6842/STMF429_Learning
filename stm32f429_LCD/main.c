@@ -44,12 +44,21 @@
   * @param  None
   * @retval None
   */
+static inline void Delay_1us(uint32_t nCnt_1us)
+{
+  volatile uint32_t nCnt;
+
+  for (; nCnt_1us != 0; nCnt_1us--)
+    for (nCnt = 13; nCnt != 0; nCnt--);
+}
+
 int main(void)
 {
-
+  uint8_t colorR =0 ,colorG =0 ,colorB =0 ;
+  uint8_t colorR_dir =0 ,colorG_dir =0 ,colorB_dir =0 ;
   char lcd_text_buff[100];
   uint32_t test_int32 =0;
-    
+  float test_float =1.222f;
   /*!< At this stage the microcontroller clock setting is already configured, 
   this is done through SystemInit() function which is called from startup
   file (startup_stm32f429_439xx.s) before to branch to application main.
@@ -62,28 +71,138 @@ int main(void)
   
   /* LCD Layer initialization */
   LCD_LayerInit();
-    
   /* Enable the LTDC */
   LTDC_Cmd(ENABLE);
   
+  /* Reload configuration of Layer1 */
+  LTDC_ReloadConfig(LTDC_IMReload);
   /* Set LCD foreground layer */
-  LCD_SetLayer(LCD_FOREGROUND_LAYER);
   
+  //LCD_SetLayer(LCD_BACKGROUND_LAYER);
+  //LCD_SetColorKeying(LCD_COLOR_WHITE);
   /* Clear the LCD */ 
   LCD_Clear(LCD_COLOR_WHITE);
+  LCD_SetFont(&Font16x24);
 
-  LCD_SetFont(&Font8x12);
+  LCD_SetLayer(LCD_FOREGROUND_LAYER);
+  LCD_SetColorKeying(0xFFFFFF);
+  LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
+
+  LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
+  LCD_DisplayStringLine(LINE(2), (uint8_t*)" Ming6842 @ github");
+  LCD_DisplayStringLine(LINE(3), (uint8_t*)" -------------------");
+  LCD_DisplayStringLine(LINE(5), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(6), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(7), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(8), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(9), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(10), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(11), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+  LCD_DisplayStringLine(LINE(12), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+
+
+    //LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
+    //LCD_DrawFullRect(0,0,240,320);
+    LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+
+    LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
+    LCD_DrawFullRect(0,0,240,320);
+
+    //LCD_SetTransparency(122);
+    //LCD_Clear(LCD_COLOR_WHITE);
+    LCD_SetTextColor(LCD_COLOR_BLACK);
+    LCD_DrawFullCircle(120, 240, 40);
+    Delay_1us(10000);
+
+    LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
+    LCD_DrawFullCircle(120, 240, 30);
+
+
+    Delay_1us(10000);
+
+  LCD_SetLayer(LCD_BACKGROUND_LAYER);
+  LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
+
   LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
   LCD_DisplayStringLine(LINE(2), (uint8_t*)" Ming6842 @ github");
   LCD_DisplayStringLine(LINE(3), (uint8_t*)" -------------------");
   LCD_DisplayStringLine(LINE(4), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
+    LCD_SetLayer(LCD_FOREGROUND_LAYER);
 
 
+    //LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
+   // LCD_DrawFullRect(0,0,240,320);
   while (1)
   {
-      sprintf(lcd_text_buff,"LOLOLOLOLOLOLL %ld",test_int32);
-      LCD_DisplayStringLine(LINE(7), (uint8_t*)lcd_text_buff);
-      test_int32++;
+
+
+    if(colorR_dir){
+
+          colorR += 1;
+
+      if(colorR > 250) colorR_dir=0;
+      
+    }else{
+
+      colorR -= 1;
+
+      if(colorR<2) colorR_dir=1;
+    }
+
+    if(colorG_dir){
+
+          colorG += 2;
+
+      if(colorG > 250) colorG_dir=0;
+      
+    }else{
+
+      colorG -= 2;
+
+      if(colorG<3) colorG_dir=1;
+    }
+
+    if(colorB_dir){
+
+          colorB += 3;
+
+      if(colorB > 250) colorB_dir=0;
+      
+    }else{
+
+      colorB -= 3;
+
+      if(colorB<4) colorB_dir=1;
+    }
+
+
+    // LCD_SetLayer(LCD_BACKGROUND_LAYER);
+    // LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
+    // LCD_DrawFullRect(0,0,240,320);
+
+
+
+
+    // LCD_SetTextColor(LCD_COLOR_WHITE);
+    // LCD_SetLayer(LCD_FOREGROUND_LAYER);
+    // //LCD_DrawFullCircle(120, 240, 40);
+    // Delay_1us(10000);
+
+    // LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
+    // //sLCD_DrawFullCircle(120, 240, 30);
+
+
+    Delay_1us(10000);
+
+     // LCD_Clear(ASSEMBLE_RGB(colorR, colorG, colorB));
+
+
+      //sprintf(lcd_text_buff," LOLOLOL %ld",test_int32);
+      //LCD_DisplayStringLine(LINE(7), (uint8_t*)lcd_text_buff);
+
+      //LCD_DisplayStringLine(LINE(8), (uint8_t*)lcd_text_buff);
+
   }
   
 }
