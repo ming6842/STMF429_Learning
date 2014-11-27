@@ -149,19 +149,19 @@ int main(void)
 
     DrawThickCircle(X_MIDDLE,Y_MIDDLE,30,7);
 
-    DrawThickCircle(X_MIDDLE+60,Y_MIDDLE,18,5);
-    DrawThickCircle(X_MIDDLE-60,Y_MIDDLE,18,5);
-    DrawThickCircle(X_MIDDLE   ,Y_MIDDLE+60,18,5);
-    DrawThickCircle(X_MIDDLE   ,Y_MIDDLE-60,18,5);
+    DrawThickCircle(X_MIDDLE+60,Y_MIDDLE,22,   5);
+    DrawThickCircle(X_MIDDLE-60,Y_MIDDLE,22,   5);
+    DrawThickCircle(X_MIDDLE   ,Y_MIDDLE+60,22,5);
+    DrawThickCircle(X_MIDDLE   ,Y_MIDDLE-60,22,5);
 
-    DrawThickCircle(X_MIDDLE+75,Y_MIDDLE+75,25,5);
-    DrawThickCircle(X_MIDDLE-75,Y_MIDDLE-75,25,5);
-    DrawThickCircle(X_MIDDLE+75,Y_MIDDLE-75,25,5);
-    DrawThickCircle(X_MIDDLE-75,Y_MIDDLE+75,25,5);
+    DrawThickCircle(X_MIDDLE+75,Y_MIDDLE+75,32,5);
+    DrawThickCircle(X_MIDDLE-75,Y_MIDDLE-75,32,5);
+    DrawThickCircle(X_MIDDLE+75,Y_MIDDLE-75,32,5);
+    DrawThickCircle(X_MIDDLE-75,Y_MIDDLE+75,32,5);
 
     LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
 
-    LCD_DisplayStringLine(LINE(1), (uint8_t*)"     CE-91     ");
+    LCD_DisplayStringLine(LINE(1), (uint8_t*)"     Ce-91     ");
 
     Delay_1us(10000);
 
