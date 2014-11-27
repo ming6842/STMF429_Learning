@@ -71,21 +71,25 @@ int main(void)
   
   /* LCD Layer initialization */
   LCD_LayerInit();
+    
+  LCD_SetLayer(LCD_FOREGROUND_LAYER);
+  LCD_SetColorKeying(0xFFFFFF);
+
+  /* Need to reload */
+  LTDC_ReloadConfig(LTDC_IMReload);
+
   /* Enable the LTDC */
   LTDC_Cmd(ENABLE);
   
-  /* Reload configuration of Layer1 */
-  LTDC_ReloadConfig(LTDC_IMReload);
   /* Set LCD foreground layer */
   
-  //LCD_SetLayer(LCD_BACKGROUND_LAYER);
-  //LCD_SetColorKeying(LCD_COLOR_WHITE);
+
+
   /* Clear the LCD */ 
   LCD_Clear(LCD_COLOR_WHITE);
   LCD_SetFont(&Font16x24);
 
-  LCD_SetLayer(LCD_FOREGROUND_LAYER);
-  LCD_SetColorKeying(0xFFFFFF);
+  LCD_SetLayer(LCD_BACKGROUND_LAYER);
   LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
 
   LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
@@ -110,7 +114,7 @@ int main(void)
     LCD_DrawFullRect(0,0,240,320);
 
     //LCD_SetTransparency(122);
-    //LCD_Clear(LCD_COLOR_WHITE);
+    LCD_Clear(LCD_COLOR_WHITE);
     LCD_SetTextColor(LCD_COLOR_BLACK);
     LCD_DrawFullCircle(120, 240, 40);
     Delay_1us(10000);
@@ -121,18 +125,8 @@ int main(void)
 
     Delay_1us(10000);
 
-  LCD_SetLayer(LCD_BACKGROUND_LAYER);
-  LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
-
-  LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
-  LCD_DisplayStringLine(LINE(2), (uint8_t*)" Ming6842 @ github");
-  LCD_DisplayStringLine(LINE(3), (uint8_t*)" -------------------");
-  LCD_DisplayStringLine(LINE(4), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-    LCD_SetLayer(LCD_FOREGROUND_LAYER);
-
-
-    //LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
-   // LCD_DrawFullRect(0,0,240,320);
+    // LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
+    // LCD_DrawFullRect(0,0,240,320);
   while (1)
   {
 
