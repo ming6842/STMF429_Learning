@@ -105,15 +105,6 @@ int main(void)
 
   LCD_DisplayStringLine(LINE(1), (uint8_t*)" LCD text print example ");
   LCD_DisplayStringLine(LINE(2), (uint8_t*)" Ming6842 @ github");
-  LCD_DisplayStringLine(LINE(3), (uint8_t*)" -------------------");
-  LCD_DisplayStringLine(LINE(5), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(6), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(7), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(8), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(9), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(10), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(11), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
-  LCD_DisplayStringLine(LINE(12), (uint8_t*)" !@#$%%^&*()_+)(*&^%%$#$%%^&*");
 
 
     //LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
