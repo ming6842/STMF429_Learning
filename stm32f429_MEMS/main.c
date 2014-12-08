@@ -140,13 +140,36 @@ void DrawThickCircle(uint32_t x,uint32_t y,uint32_t radius, uint32_t thickness){
 
 }
 
+  Point needlePoints[4];
+void DrawNeedle(int32_t x_center,int32_t y_center,float direction,int32_t radius, int32_t base_width){
+
+  direction += 180.0f;
+
+  needlePoints[0].X = x_center + (int32_t)((float) base_width * cosf(direction * 0.0174444444444f));
+  needlePoints[0].Y = y_center + (int32_t)((float) base_width * sinf(direction * 0.0174444444444f));
+
+  needlePoints[1].X = x_center - (int32_t)((float) radius * sinf(direction * 0.0174444444444f));
+  needlePoints[1].Y = y_center + (int32_t)((float) radius * cosf(direction * 0.0174444444444f));
+
+  needlePoints[2].X = x_center - (int32_t)((float) base_width * cosf(direction * 0.0174444444444f));
+  needlePoints[2].Y = y_center - (int32_t)((float) base_width * sinf(direction * 0.0174444444444f));
+
+
+    // LCD_ClosedPolyLine(needlePoints,3); //this one work
+
+LCD_FillTriangle(needlePoints[0].X,needlePoints[1].X,needlePoints[2].X
+              ,  needlePoints[0].Y,needlePoints[1].Y,needlePoints[2].Y);
+    //LCD_FillPolyLine(needlePoints, 3); // this one bugged
+
+}
+
+
 int main(void)
 {
-  uint8_t colorR =0 ,colorG =0 ,colorB =0 ;
-  uint8_t colorR_dir =0 ,colorG_dir =0 ,colorB_dir =0 ;
-  char lcd_text_buff[100];
 
+  char lcd_text_buff[100];
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
+  float GyX_prev =0.0f, GyY_prev =0.0f, GyZ_prev =0.0f;
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   uint32_t i=0;
 
@@ -201,7 +224,7 @@ int main(void)
 
   LCD_SetLayer(LCD_BACKGROUND_LAYER);
 
-  #define CALIBRATE_COUNT 200
+  #define CALIBRATE_COUNT 1000
   for (i=0;i<CALIBRATE_COUNT ;i++){
 
 
@@ -214,6 +237,20 @@ int main(void)
   X_offset = X_offset/ (float)CALIBRATE_COUNT;
   Y_offset = Y_offset/ (float)CALIBRATE_COUNT;
   Z_offset = Z_offset/ (float)CALIBRATE_COUNT;
+
+
+    LCD_SetColors(ASSEMBLE_RGB(22, 150, 255),LCD_COLOR_BLACK);
+    LCD_DrawFullRect(0,0,240,320);
+
+
+#define X_MIDDLE 120
+#define Y_MIDDLE 190
+
+
+
+
+    DrawThickCircle(X_MIDDLE,Y_MIDDLE,100,7);
+
 
   while (1)
   {
@@ -228,6 +265,7 @@ int main(void)
     GyY = GyY*(1.0f - LP_ALPHA) + (Buffer[1] - Y_offset)*LP_ALPHA;
     GyZ = GyZ*(1.0f - LP_ALPHA) + (Buffer[2] - Z_offset)*LP_ALPHA;
 
+    LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
     sprintf(lcd_text_buff," GyX :%f         ",(GyX *1.0f));
     LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_buff);
     sprintf(lcd_text_buff," GyY :%f          ",(GyY *1.0f));
@@ -235,52 +273,19 @@ int main(void)
 
 
 
-  LCD_SetLayer(LCD_BACKGROUND_LAYER);
-
-    if(colorR_dir){
-
-          colorR += 1;
-
-      if(colorR > 250) colorR_dir=0;
-      
-    }else{
-
-      colorR -= 1;
-
-      if(colorR<20) colorR_dir=1;
-    }
-
-    if(colorG_dir){
-
-          colorG += 2;
-
-      if(colorG > 250) colorG_dir=0;
-      
-    }else{
-
-      colorG -= 2;
-
-      if(colorG<25) colorG_dir=1;
-    }
-
-    if(colorB_dir){
-
-          colorB += 3;
-
-      if(colorB > 250) colorB_dir=0;
-      
-    }else{
-
-      colorB -= 3;
-
-      if(colorB<25) colorB_dir=1;
-    }
 
 
-    LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
-    LCD_DrawFullRect(0,0,240,320);
+  LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
+
+  /* drew quite ok but glitch */
+   DrawNeedle(X_MIDDLE,Y_MIDDLE,GyY_prev,100,16);
+    LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+   DrawNeedle(X_MIDDLE,Y_MIDDLE,GyY,80, 10);
 
 
+   GyX_prev = GyX;
+   GyY_prev = GyY;
+   GyZ_prev = GyZ;
 
 
     // LCD_SetTextColor(LCD_COLOR_WHITE);
@@ -292,7 +297,7 @@ int main(void)
     // //sLCD_DrawFullCircle(120, 240, 30);
 
 
-    Delay_1us(10000);
+    Delay_1us(1000);
 
      // LCD_Clear(ASSEMBLE_RGB(colorR, colorG, colorB));
 
