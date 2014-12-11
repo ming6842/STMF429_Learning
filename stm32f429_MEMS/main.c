@@ -163,16 +163,60 @@ LCD_FillTriangle(needlePoints[0].X,needlePoints[1].X,needlePoints[2].X
 
 }
 
+void GPIO_Configuration(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+
+    /*-------------------------- GPIO Configuration ----------------------------*/
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    /* Connect USART pins to AF */
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource9, GPIO_AF_USART1);   // USART1_TX
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource10, GPIO_AF_USART1);  // USART1_RX
+}
+
+
+
+void USART1_Configuration(void)
+{
+    USART_InitTypeDef USART_InitStructure;
+
+    /* USARTx configuration ------------------------------------------------------*/
+    /* USARTx configured as follow:
+     *  - BaudRate = 57600 baud
+     *  - Word Length = 8 Bits
+     *  - One Stop Bit
+     *  - No parity
+     *  - Hardware flow control disabled (RTS and CTS signals)
+     *  - Receive and transmit enabled
+     */
+    USART_InitStructure.USART_BaudRate = 57600;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    USART_Init(USART1, &USART_InitStructure);
+    USART_Cmd(USART1, ENABLE);
+}
 
 int main(void)
 {
 
   char lcd_text_buff[100];
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
+  float AngY = 0.0f;
   float GyX_prev =0.0f, GyY_prev =0.0f, GyZ_prev =0.0f;
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   uint32_t i=0;
+  uint8_t chksum = 0;
 
+   uint8_t  toPushPosition=0;
 
   /*!< At this stage the microcontroller clock setting is already configured, 
   this is done through SystemInit() function which is called from startup
@@ -201,6 +245,10 @@ int main(void)
   /* MEMS Initialization */
   Demo_GyroConfig();
 
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+  GPIO_Configuration();
+  USART1_Configuration();
 
   /* Clear the LCD */ 
   LCD_Clear(LCD_COLOR_WHITE);
@@ -265,11 +313,49 @@ int main(void)
     GyY = GyY*(1.0f - LP_ALPHA) + (Buffer[1] - Y_offset)*LP_ALPHA;
     GyZ = GyZ*(1.0f - LP_ALPHA) + (Buffer[2] - Z_offset)*LP_ALPHA;
 
+    AngY += (Buffer[1] - Y_offset)*0.045;
+
+
+    if(AngY >= 180.0f){
+
+      AngY = 180.0f;
+    }else if(AngY <= -180.0f){
+
+      AngY = -180.0f;
+    }
+
+    toPushPosition = (uint8_t)((AngY/180.0f * 126.0f) +126.0f);
+
+    chksum =0;
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    USART_SendData(USART1, 0x91);
+    chksum += 0x91;
+
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    USART_SendData(USART1, 0x71);
+    chksum += 0x71;
+
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    USART_SendData(USART1, 0x01);
+    chksum += 0x01;
+
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    USART_SendData(USART1, toPushPosition);
+    chksum += toPushPosition;
+
+    while(USART_GetFlagStatus(USART1, USART_FLAG_TXE) == RESET);
+    USART_SendData(USART1,chksum );
+
+
+
     LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
     sprintf(lcd_text_buff," GyX :%f         ",(GyX *1.0f));
     LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_buff);
     sprintf(lcd_text_buff," GyY :%f          ",(GyY *1.0f));
     LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_buff);
+
+    sprintf(lcd_text_buff," AngY :%f          ",(AngY *1.0f));
+    LCD_DisplayStringLine(LINE(3), (uint8_t*)lcd_text_buff);
 
 
 
@@ -279,11 +365,36 @@ int main(void)
 
   /* drew quite ok but glitch */
    DrawNeedle(X_MIDDLE,Y_MIDDLE,GyY_prev,100,16);
+
+
     LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
    DrawNeedle(X_MIDDLE,Y_MIDDLE,GyY,80, 10);
 
+//   {
+//     int pix_test = 0;
 
-   GyX_prev = GyX;
+//     while(pix_test < 150){
+
+//       *(__IO uint16_t*) (LCD_FRAME_BUFFER + (2*((120) + LCD_PIXEL_WIDTH*(pix_test)))) = LCD_COLOR_WHITE; 
+
+//     pix_test++;
+//     }
+
+
+
+//     pix_test = 0;
+//     while(pix_test < 150){
+
+// *(__IO uint16_t*) (LCD_FRAME_BUFFER + (2*((120) + LCD_PIXEL_WIDTH*(pix_test)))) = LCD_COLOR_BLACK; 
+
+//     pix_test++;
+//     }
+
+//   }
+
+
+
+     GyX_prev = GyX;
    GyY_prev = GyY;
    GyZ_prev = GyZ;
 
