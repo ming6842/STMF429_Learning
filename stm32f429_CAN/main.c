@@ -230,6 +230,11 @@ int main(void)
   lcd_drawBackground(20,60,250);
   lcd_drawBGPersimmon(20, 60, 250);
 
+
+    LCD_SetColors(LCD_COLOR_WHITE-1,LCD_COLOR_WHITE);
+    LCD_SetFont(&Font16x24);
+    LCD_DisplayStringLine(LINE(1), (uint8_t*)" CAN Bus DEMO  ");
+    DrawNeedle(120,120,60,300.0f,0.0f,200.0f);
   while (1)
   {
     CANx_Transmit();
