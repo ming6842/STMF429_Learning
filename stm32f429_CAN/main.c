@@ -172,6 +172,16 @@ void GPIO_Configuration(void)
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOG, &GPIO_InitStructure);
 
+
+    // /* Configure the CAN test */
+    // GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13 | GPIO_Pin_12;  // LED is connected to PG13/PG14
+    // GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+    // GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+    // GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+    // GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    // GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+  
 }
 
 void USART1_Configuration(void)
@@ -209,189 +219,34 @@ int main(void)
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   uint32_t i=0;
-
+  float delay_count=1000.0f;
 
   GPIO_Configuration();
   USART1_Configuration();
   CANx_Config();
   CANx_NVIC_Config();
 
-  /*!< At this stage the microcontroller clock setting is already configured, 
-  this is done through SystemInit() function which is called from startup
-  file (startup_stm32f429_439xx.s) before to branch to application main.
-  To reconfigure the default setting of SystemInit() function, refer to
-  system_stm32f4xx.c file
-  */      
 
-  /* LCD initialization */
-  // LCD_Init(); 
-  // /* LCD Layer initialization */
-  // LCD_LayerInit();
-  // /* configure the color Keying */
-  // LCD_SetColorKeying(0xFFFFFF);
-  // /* Enable the LTDC */
-  // LTDC_Cmd(ENABLE);
-  
-  // /* Clear the LCD */ 
-  // LCD_Clear(LCD_COLOR_WHITE);
-  // LCD_SetFont(&Font12x12);
-
-
-  // LCD_SetLayer(LCD_FOREGROUND_LAYER);
-  // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
-  // //LCD_DrawFullRect(0,0,240,320);
-  
-  // Meter(120,160,100,10,-10);
-
-
-  //LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
-  //LCD_DrawFullRect(0,0,240,320);
-  // LCD_SetLayer(LCD_BACKGROUND_LAYER);
-  // LCD_SetColors(LCD_COLOR_BLUE,LCD_COLOR_BLACK);
-  // LCD_DrawFullRect(0,0,240,320);
-
-  // LCD_Clear(LCD_COLOR_WHITE);
-
-
-
-  // LCD_SetLayer(LCD_BACKGROUND_LAYER);
-  // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
-  // DrawThickCircle(120,160,100,5);
-
-  // LCD_SetLayer(LCD_BACKGROUND_LAYER);
-
-  /* MEMS Initialization */
-  // Demo_GyroConfig();
-
-  // #define CALIBRATE_COUNT 200
-  // for (i=0;i<CALIBRATE_COUNT ;i++){
-
-
-  //   Demo_GyroReadAngRate (Buffer);
-  //   X_offset+= Buffer[0];
-  //   Y_offset+= Buffer[1];
-  //   Z_offset+= Buffer[2];
-
-  // }
-  // X_offset = X_offset/ (float)CALIBRATE_COUNT;
-  // Y_offset = Y_offset/ (float)CALIBRATE_COUNT;
-  // Z_offset = Z_offset/ (float)CALIBRATE_COUNT;
-
-  
-  // CANx_Transmit();
   while (1)
   {
     CANx_Transmit();
     GPIO_ToggleBits(LED4);
-    // GPIO_ToggleBits(GPIOD,GPIO_Pin_0);
-    // GPIO_ToggleBits(GPIOD,GPIO_Pin_1);
 
-    // LCD_SetLayer(LCD_FOREGROUND_LAYER);
-    // //LCD_SetTransparency(122);
-    // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
-    // Demo_GyroReadAngRate (Buffer);
-
-    // /* MEMS Test area */
-    // #define LP_ALPHA 0.3f
-    // GyX = GyX*(1.0f - LP_ALPHA) + (Buffer[0] - X_offset)*LP_ALPHA;
-    // GyY = GyY*(1.0f - LP_ALPHA) + (Buffer[1] - Y_offset)*LP_ALPHA;
-    // GyZ = GyZ*(1.0f - LP_ALPHA) + (Buffer[2] - Z_offset)*LP_ALPHA;
-
-    // sprintf(lcd_text_buff," GyX :%f         ",(GyX *1.0f));
-    // LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_buff);
-    // sprintf(lcd_text_buff," GyY :%f          ",(GyY *1.0f));
-    // LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_buff);
-
-    // DrawNeedle(120,160,75,10,-10,GyX);
-    // Delay_1us(100000);
-    // LCD_SetColors(LCD_COLOR_WHITE,LCD_COLOR_WHITE);
-    // DrawNeedle(120,160,75,10,-10,GyX);
+    // GPIO_ResetBits(GPIOB,GPIO_Pin_12);
+    // GPIO_ResetBits(GPIOB,GPIO_Pin_13);
 
 
-   //  LCD_SetLayer(LCD_BACKGROUND_LAYER);
+    // Delay_1us(100);
 
-   // if(colorR_dir){
+    // GPIO_ToggleBits(GPIOB,GPIO_Pin_12);
+    // GPIO_ToggleBits(GPIOB,GPIO_Pin_13);
 
-   //        colorR += 1;
+    // Delay_1us(1000);
 
-   //    if(colorR > 250) colorR_dir=0;
-      
-   //  }else{
-
-   //    colorR -= 1;
-
-   //    if(colorR<20) colorR_dir=1;
-   //  }
-
-   //  if(colorG_dir){
-
-   //        colorG += 2;
-
-   //    if(colorG > 250) colorG_dir=0;
-      
-   //  }else{
-
-   //    colorG -= 2;
-
-   //    if(colorG<25) colorG_dir=1;
-   //  }
-
-   //  if(colorB_dir){
-
-   //        colorB += 3;
-
-   //    if(colorB > 250) colorB_dir=0;
-      
-   //  }else{
-
-   //    colorB -= 3;
-
-   //    if(colorB<25) colorB_dir=1;
-   //  }
-
-
-   //  LCD_SetColors(ASSEMBLE_RGB(colorR, colorG, colorB),LCD_COLOR_BLACK);
-   //  LCD_DrawFullRect(0,0,240,320);
-
-
-     
+    // Delay_1us((uint32_t)delay_count);
+    // delay_count+= 0.105f;
 
   }
   
 }
 
-/**
-* @brief  Configure the IO Expander and the Touch Panel.
-* @param  None
-* @retval None
-*/
-#ifdef  USE_FULL_ASSERT
-
-/**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
-void assert_failed(uint8_t* file, uint32_t line)
-{
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-
-  /* Infinite loop */
-  while (1)
-  {
-  }
-}
-#endif
-
-/**
-  * @}
-  */ 
-
-/**
-  * @}
-  */ 
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
