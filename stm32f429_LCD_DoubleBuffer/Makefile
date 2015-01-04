@@ -83,6 +83,8 @@ OBJS=	./system_stm32f4xx.o \
         $(STM32F429_LIB)/stm32f429i_discovery_l3gd20.o \
         ../Common/lcd_log.o \
         ./main.o \
+        ./lcd.o \
+        ./lcd_glitchless.o \
         $(STARTUP) 
         
 #Make all

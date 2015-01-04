@@ -37,6 +37,8 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ioe.h"
 #include "stm32f429i_discovery_l3gd20.h"
+#include "lcd_glitchless.h"
+#include "lcd.h"
 
 /* Private define ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
@@ -44,6 +46,7 @@
 /* Exported macro ------------------------------------------------------------*/ 
 /* Exported functions ------------------------------------------------------- */
 
+  
 #endif /* __MAIN_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
