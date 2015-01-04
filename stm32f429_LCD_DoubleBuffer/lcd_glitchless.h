@@ -7,7 +7,7 @@
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ioe.h"
 
-void DrawDirectlyPixel(uint16_t xpos,uint16_t ypos,uint32_t color);
+void DrawDirectlyPixel(uint16_t layer,uint16_t xpos,uint16_t ypos,uint32_t color);
 
 
 
