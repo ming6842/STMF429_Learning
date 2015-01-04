@@ -15,6 +15,8 @@ static inline void Delay_1us(uint32_t nCnt_1us)
 #define L3G_Sensitivity_2000dps    (float)14.285f         /*!< gyroscope sensitivity with 2000 dps full scale [LSB/dps] */
   
 
+float Buffer[6];
+
 static void Demo_GyroConfig(void);
 static void Demo_GyroReadAngRate (float* pfData);
 
@@ -104,6 +106,9 @@ uint32_t L3GD20_TIMEOUT_UserCallback(void)
 int main(void)
 {
 
+  float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
+  float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
+
       uint16_t xpos=0;
       uint16_t ypos=0;
 
@@ -121,8 +126,7 @@ int main(void)
   char lcd_text_main[100];
   uint32_t runner=0;
 
-    /* MEMS Initialization */
-    Demo_GyroConfig();
+
 
     /* LCD Initialization */
     lcd_init();
@@ -145,75 +149,54 @@ int main(void)
 
   LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE);
 
+    /* MEMS Initialization */
+    Demo_GyroConfig();
 
-      // for(i=0;i<x_len;i++){
-
-      //   for(j=0;j<y_len;j++){
-
-      //     buffer_screen[i][j] = LCD_COLOR_WHITE;
-      //   }
-
-      // }
-
-      // for(i=1;i<x_len-1;i++){
-
-      //   DrawDirectlyPixel(LCD_FOREGROUND_LAYER,i,1,LCD_COLOR_BLACK);
-      //   DrawDirectlyPixel(LCD_FOREGROUND_LAYER,i,310,LCD_COLOR_BLACK);
-
-      // }
-
-      // for(j=1;j<y_len-1;j++){
-
-      //   DrawDirectlyPixel(LCD_FOREGROUND_LAYER,1,j,LCD_COLOR_BLACK);
-      //   DrawDirectlyPixel(LCD_FOREGROUND_LAYER,10,j,LCD_COLOR_BLACK);
-
-      // }
+  #define CALIBRATE_COUNT 1000
+  for (i=0;i<CALIBRATE_COUNT ;i++){
 
 
-       // for(i=0;i<x_len;i++){
+    Demo_GyroReadAngRate (Buffer);
+    X_offset+= Buffer[0];
+    Y_offset+= Buffer[1];
+    Z_offset+= Buffer[2];
 
-       //    (*array_ptr)[i][y_len/2-1] = LCD_COLOR_BLACK;
-       //    (*array_ptr)[i][y_len/2] = LCD_COLOR_BLACK;
-       //    (*array_ptr)[i][y_len/2+1] = LCD_COLOR_BLACK;
-
-       //  }
-
-
-      // for(i=0;i<x_len;i++){
-
-      //   buffer_screen[i][y_len/2] = LCD_COLOR_BLACK;
-
-      // }
-      // for(i=0;i<x_len;i++){
-
-      //   buffer_screen[i][y_len/2 + 1] = LCD_COLOR_BLACK;
-
-      // }
-
-      // for(i=0;i<x_len;i++){
-
-      //   buffer_screen[i][y_len/2 + 2] = LCD_COLOR_BLACK;
-
-      // }
+  }
+  X_offset = X_offset/ (float)CALIBRATE_COUNT;
+  Y_offset = Y_offset/ (float)CALIBRATE_COUNT;
+  Z_offset = Z_offset/ (float)CALIBRATE_COUNT;
 
 
-      while(y_runner--)
+
+      while(1)
       {
 
-        // ypos = y_runner;
-        // for(i=0;i< x_len;i++){
-        //   for(j=0;j< y_len;j++)
-        //   DrawDirectlyPixel(LCD_FOREGROUND_LAYER,i+xpos,j+ypos,buf_ptr[j + y_len*i]);
-        // }
+
+
+        Demo_GyroReadAngRate (Buffer);
+
+        /* MEMS Test area */
+        #define LP_ALPHA 0.4f
+        GyX = GyX*(1.0f - LP_ALPHA) + (Buffer[0] - X_offset)*LP_ALPHA;
+        GyY = GyY*(1.0f - LP_ALPHA) + (Buffer[1] - Y_offset)*LP_ALPHA;
+        GyZ = GyZ*(1.0f - LP_ALPHA) + (Buffer[2] - Z_offset)*LP_ALPHA;
+
+        if(GyX > 130.0f) GyX = 130.0f;
+        if(GyX < -130.0f) GyX = -130.0f;
+        if(GyY > 100.0f) GyY = 100.0f;
+        if(GyY < -100.0f) GyY = -100.0f;
+
+        /* for debugging */
+          // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+          // sprintf(lcd_text_main," GyX :%f         ",(GyX *1.0f));
+          // LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_main);
+
+          // sprintf(lcd_text_main," y_runner :%d         ",y_runner++);
+          // LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_main);
 
         PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_WHITE, 0,0,x_len,y_len);
-        PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_BLACK, 0,y_runner,20,20);
+        PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_BLACK, x_len/2+ (int16_t)(GyY)-10,y_len/2 + (int16_t)(GyX)-10,25,25);
          DrawBufferToScreen(LCD_FOREGROUND_LAYER,buf_ptr,0,0, x_len,y_len);
-
-        if(y_runner <2){
-
-          y_runner = 120;
-        }
 
       }
 
