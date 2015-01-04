@@ -3,15 +3,15 @@
 #include "stm32f429i_discovery_lcd.h"
 #include <math.h>
 
-void DrawThickCircle(uint32_t x,uint32_t y,uint32_t radius, uint32_t thickness){
+// void DrawThickCircle(uint32_t x,uint32_t y,uint32_t radius, uint32_t thickness){
 
-    LCD_SetTextColor(LCD_COLOR_BLACK);
-    LCD_DrawFullCircle(x, y, radius);
-    LCD_SetColors(LCD_COLOR_WHITE-1,LCD_COLOR_WHITE);
-    LCD_DrawFullCircle(x, y, radius-thickness);
-    LCD_DrawUniLine(x,y,x+radius,y+radius);
+//     LCD_SetTextColor(LCD_COLOR_BLACK);
+//     LCD_DrawFullCircle(x, y, radius);
+//     LCD_SetColors(LCD_COLOR_WHITE-1,LCD_COLOR_WHITE);
+//     LCD_DrawFullCircle(x, y, radius-thickness);
+//     LCD_DrawUniLine(x,y,x+radius,y+radius);
 
-}
+// }
 
 void DrawNeedle(uint16_t x,uint16_t y,uint16_t radius,float max,float min,float variable)
 {
@@ -113,6 +113,6 @@ void Meter(uint16_t x,uint16_t y,uint16_t radius,float max,float min)
 
   	}
 
-  	DrawThickCircle(x,y,radius-15,5);		
+  	//DrawThickCircle(x,y,radius-15,5);		
 
 }

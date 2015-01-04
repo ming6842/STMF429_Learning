@@ -85,6 +85,7 @@ OBJS=	./system_stm32f4xx.o \
         ../Common/lcd_log.o \
         ./main.o \
         ./can.o \
+        ./lcd.o \
         ./drawing.o \
         $(STARTUP) 
         

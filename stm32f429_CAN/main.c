@@ -29,6 +29,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "drawing.h"
+#include "lcd.h"
 float Buffer[6];
 
 /* Private macro -------------------------------------------------------------*/
@@ -225,26 +226,14 @@ int main(void)
   USART1_Configuration();
   CANx_Config();
   CANx_NVIC_Config();
-
+  lcd_init();
+  lcd_drawBackground(20,60,250);
+  lcd_drawBGPersimmon(20, 60, 250);
 
   while (1)
   {
     CANx_Transmit();
     GPIO_ToggleBits(LED4);
-
-    // GPIO_ResetBits(GPIOB,GPIO_Pin_12);
-    // GPIO_ResetBits(GPIOB,GPIO_Pin_13);
-
-
-    // Delay_1us(100);
-
-    // GPIO_ToggleBits(GPIOB,GPIO_Pin_12);
-    // GPIO_ToggleBits(GPIOB,GPIO_Pin_13);
-
-    // Delay_1us(1000);
-
-    // Delay_1us((uint32_t)delay_count);
-    // delay_count+= 0.105f;
 
   }
   
