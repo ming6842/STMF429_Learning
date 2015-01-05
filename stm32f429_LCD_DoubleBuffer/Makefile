@@ -84,6 +84,7 @@ OBJS=	./system_stm32f4xx.o \
         ../Common/lcd_log.o \
         ./main.o \
         ./lcd.o \
+        ./gyro.o \
         ./lcd_glitchless.o \
         $(STARTUP) 
         
