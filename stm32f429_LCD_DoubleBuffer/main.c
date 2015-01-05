@@ -34,7 +34,7 @@ int main(void)
 
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
-
+  float GyY_prev=0.0f;
       uint16_t x_len=240;
       uint16_t y_len=320;
 
@@ -42,11 +42,13 @@ int main(void)
       uint16_t buffer_screen[x_len][y_len];
 
       uint16_t *buf_ptr = &buffer_screen;
-
+      float runner=-8.0;
 
       rectangular_t rect1;
       rectangular_t prev_rect;
       rectangular_t rect_screen;
+
+      triangle_t triang1;
 
 
     char lcd_text_main[100];
@@ -76,6 +78,14 @@ int main(void)
       Y_offset = Y_offset/ (float)CALIBRATE_COUNT;
       Z_offset = Z_offset/ (float)CALIBRATE_COUNT;
 
+
+        rect_screen.xlen = x_len;
+        rect_screen.ylen = y_len;
+        rect_screen.xpos = 0;
+        rect_screen.ypos = 0;
+        
+        PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_WHITE, &rect_screen);
+
       while(1)
       {
 
@@ -92,30 +102,27 @@ int main(void)
         if(GyY > 100.0f) GyY = 100.0f;
         if(GyY < -100.0f) GyY = -100.0f;
 
-
         /* Start drawing rectangular */
         prev_rect = rect1;
 
         rect1.xlen = 25;
-        rect1.ylen = 5;
+        rect1.ylen = 30;
         rect1.xpos = x_len/2+ (int16_t)(GyY)-10;
         rect1.ypos = y_len/2 + (int16_t)(GyX)-10;
 
-        rect_screen.xlen = x_len;
-        rect_screen.ylen = y_len;
-        rect_screen.xpos = 0;
-        rect_screen.ypos = 0;
+        MoveNeedle(LCD_FOREGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_BLACK,120,200,GyY*1.5f,GyY_prev*1.5f,90,10);
 
+
+        GyY_prev = GyY;
+
+        runner += 1.0f;
         /* Faster method */
-        MoveAndUpdateRectangular(LCD_FOREGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_BLACK,&prev_rect, &rect1);
+        //MoveAndUpdateRectangular(LCD_FOREGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_BLACK,&prev_rect, &rect1);
         
-       
-        GPIO_ToggleBits(GPIOG,GPIO_Pin_13);
-
         /* Regular method */
         // PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_WHITE, &prev_rect);
         // PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_BLACK, &rect1);
-        // DrawBufferToScreen(LCD_FOREGROUND_LAYER,buf_ptr,0,0, x_len,y_len);
+         //DrawBufferToScreen(LCD_FOREGROUND_LAYER,buf_ptr,0,0, x_len,y_len);
 
       }
 
