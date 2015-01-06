@@ -32,30 +32,22 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx.h"
 #include <stdio.h>
+#include <math.h>
 #include "stm32f429i_discovery.h"
 #include "stm32f429i_discovery_lcd.h"
 #include "stm32f429i_discovery_ioe.h"
 #include "stm32f429i_discovery_l3gd20.h"
+#include "lcd_glitchless.h"
+#include "lcd.h"
 #include "can.h"
 
 /* Private define ------------------------------------------------------------*/
-#define LED_TOGGLE(led_name) GPIO_ToggleBits(led_name)
-#define LED_ON(led_name) GPIO_ResetBits(led_name)
-#define LED_OFF(led_name) GPIO_SetBits(led_name)
-#define LED1 GPIOE, GPIO_Pin_8
-#define LED2 GPIOE, GPIO_Pin_10
-#define LED3 GPIOG, GPIO_Pin_13
-#define LED4 GPIOG, GPIO_Pin_14
-#define TOGGLE_DEBUG GPIOC, GPIO_Pin_9
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/ 
 /* Exported functions ------------------------------------------------------- */
-void GPIO_Configuration(void);
-void USART1_Configuration(void);
-static inline void Delay_1us(uint32_t nCnt_1us);
 
-
+  
 #endif /* __MAIN_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

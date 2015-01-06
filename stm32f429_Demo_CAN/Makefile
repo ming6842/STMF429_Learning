@@ -73,20 +73,21 @@ OBJS=	./system_stm32f4xx.o \
         $(ST)/src/stm32f4xx_flash.o \
         $(ST)/src/stm32f4xx_gpio.o \
         $(ST)/src/stm32f4xx_ltdc.o \
+        $(ST)/src/stm32f4xx_usart.o \
         $(ST)/src/stm32f4xx_sai.o \
+        $(ST)/src/stm32f4xx_can.o \
         $(ST)/src/stm32f4xx_fmc.o \
         $(ST)/src/stm32f4xx_spi.o \
-        $(ST)/src/stm32f4xx_usart.o \
-        $(ST)/src/stm32f4xx_can.o \
         ../Common/fonts.o \
         $(STM32F429_LIB)/stm32f429i_discovery_lcd.o \
         $(STM32F429_LIB)/stm32f429i_discovery_sdram.o \
         $(STM32F429_LIB)/stm32f429i_discovery_l3gd20.o \
         ../Common/lcd_log.o \
         ./main.o \
-        ./can.o \
         ./lcd.o \
-        ./drawing.o \
+        ./can.o \
+        ./gyro.o \
+        ./lcd_glitchless.o \
         $(STARTUP) 
         
 #Make all
