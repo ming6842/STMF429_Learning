@@ -247,7 +247,7 @@ int main(void)
             TxMessage.Data[5] = test_int++;
             TxMessage.Data[6] = test_int++;
             TxMessage.Data[7] = test_int++;
-            //CAN_Transmit(CAN2, &TxMessage);
+            CAN_Transmit(CAN2, &TxMessage);
 
             if( CAN_MessagePending(CAN2, CAN_FIFO0) > 1){
                    GPIO_ToggleBits(GPIOG,GPIO_Pin_14);

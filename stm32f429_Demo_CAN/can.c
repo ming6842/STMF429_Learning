@@ -1,6 +1,9 @@
 /* CAN bus driver */
 #include "can.h"
 #include "main.h"
+
+
+
 void CAN2_Config(void)
 {
 	CAN_InitTypeDef CAN_InitStructure;
@@ -22,6 +25,7 @@ void CAN2_Config(void)
 	/* CAN configuration ********************************************************/
 	/* Enable CAN clock */
 	RCC_APB1PeriphClockCmd(CAN_CLK, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_CAN1, ENABLE);
 	/* CAN register init */
 	CAN_DeInit(CAN2);
 	/* CAN cell init */
@@ -39,7 +43,7 @@ void CAN2_Config(void)
 	CAN_InitStructure.CAN_Prescaler = 1000;
 	CAN_Init(CAN2, &CAN_InitStructure);
 	/* CAN filter init */
-	CAN_FilterInitStructure.CAN_FilterNumber = 0;
+	CAN_FilterInitStructure.CAN_FilterNumber = 14;
 	/* USE_CAN1 */
 	CAN_FilterInitStructure.CAN_FilterMode = CAN_FilterMode_IdMask;
 	CAN_FilterInitStructure.CAN_FilterScale = CAN_FilterScale_32bit;
@@ -51,6 +55,7 @@ void CAN2_Config(void)
 	CAN_FilterInitStructure.CAN_FilterActivation = ENABLE;
 	CAN_FilterInit(&CAN_FilterInitStructure);
 	/* Enable FIFO 0 message pending Interrupt */
+	//CAN_ITConfig(CAN2,  CAN_IT_FMP0, ENABLE);
 	CAN_ITConfig(CAN2, CAN_IT_FF0, ENABLE);
 }
 
