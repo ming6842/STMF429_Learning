@@ -603,8 +603,8 @@ void DrawNeedle(uint16_t *buffer_ptr,uint16_t buffer_x_len,uint16_t buffer_y_len
 
 void MoveNeedle(uint16_t layer,uint16_t *buffer_ptr,uint16_t buffer_x_len,uint16_t buffer_y_len,uint16_t color,int32_t x_center,int32_t y_center,float directtt,float prev_directions,int32_t radius, int32_t base_width){
 
-  	directtt += 270.0f;
-  	prev_directions += 270.0f;
+  	directtt += 180.0f;
+  	prev_directions += 180.0f;
     triangle_t current_triang;
     triangle_t old_triang;
 

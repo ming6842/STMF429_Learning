@@ -48,6 +48,7 @@
 /* Exported functions ------------------------------------------------------- */
 
   
+void ID_Pin_Initialization(void);
 #endif /* __MAIN_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

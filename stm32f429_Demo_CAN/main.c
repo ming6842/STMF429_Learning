@@ -1,8 +1,10 @@
 
 #include "gyro.h"
 #include "main.h"
+#include "stm32f4xx_can.h"
 
 float Buffer[6];
+uint8_t board_ID;
 
 static inline void Delay_1us(uint32_t nCnt_1us)
 {
@@ -27,28 +29,59 @@ void LED_Initialization(void){
 }
 
 
+void ID_Pin_Initialization(void){
+
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE , ENABLE); //LED3/4 GPIO Port
+
+    /* Configure the GPIO ID pin */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_5;  // LED is connected to PG13/PG14
+    GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_IN;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+    /* Configure GPIO pin for Jumper purpose */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_4;  // LED is connected to PG13/PG14
+    GPIO_InitStructure.GPIO_Mode =  GPIO_Mode_OUT;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOE, &GPIO_InitStructure);
+
+    GPIO_SetBits(GPIOE,GPIO_Pin_2 | GPIO_Pin_4);
+
+}
+
+uint8_t PIN_ID_Read(void){
+
+
+  return (GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_3))+ 2*(GPIO_ReadInputDataBit(GPIOE,GPIO_Pin_5));
+
+}
 
 
 int main(void)
 {
 
+            CanTxMsg TxMessage;
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
+  float test_float=0.0f; uint8_t test_int=0;
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
-  float GyY_prev=0.0f,GyZ_prev=0.0f;
+  float GyX_prev=0.0f,GyY_prev=0.0f,GyZ_prev=0.0f;
       uint16_t x_len=240;
       uint16_t y_len=320;
 
       uint16_t i=0;
       uint16_t buffer_screen[x_len][y_len];
 
-      uint16_t *buf_ptr = &buffer_screen;
+      // uint16_t *buf_ptr = &buffer_screen;
       float runner=-8.0;
 
       rectangular_t rect1;
       rectangular_t prev_rect;
       rectangular_t rect_screen;
-
-      triangle_t triang1;
 
 
     char lcd_text_main[100];
@@ -59,25 +92,13 @@ int main(void)
     //lcd_drawBGPersimmon(20, 60, 250);
 
 
-    LCD_SetLayer(LCD_BACKGROUND_LAYER);
-
-    DrawThickCircle(160,240,72, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-    DrawThickCircle(160,80,72, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-
-    LCD_SetLayer(LCD_FOREGROUND_LAYER);
-
-    DrawThickCircle(160,240,14, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-    DrawThickCircle(160,80,14, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-
-    LCD_SetColors(ASSEMBLE_RGB(20, 60, 250),LCD_COLOR_BLACK);
-    LCD_DrawFullRect(160-80,240-80,60,160);
 
     /* LED Initialization */
     LED_Initialization();
 
     /* CAN Initialization */
-    CANx_Config();
-    CANx_NVIC_Config();
+    CAN2_Config();
+    CAN2_NVIC_Config();
 
     /* MEMS Initialization */
     Demo_GyroConfig();
@@ -99,11 +120,89 @@ int main(void)
         rect_screen.ylen = y_len;
         rect_screen.xpos = 0;
         rect_screen.ypos = 0;
+
+        #define NEEDLE_RADIUS 65
+        #define NEEDLE_BASE_WIDTH 14
+        #define NEEDLE_FRAME_THICKNESS 5
         
+        #define NEEDLE1_CENTER_X 80
+        #define NEEDLE1_CENTER_Y 100
+
+        #define NEEDLE2_CENTER_X 80
+        #define NEEDLE2_CENTER_Y 200
+
+        #define NEEDLE3_CENTER_X 80
+        #define NEEDLE3_CENTER_Y 300
+
+        /* Drawing Needle frame 1 */
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE1_CENTER_X ,NEEDLE1_CENTER_Y,NEEDLE_RADIUS+NEEDLE_FRAME_THICKNESS, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+       
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE1_CENTER_X ,NEEDLE1_CENTER_Y,NEEDLE_BASE_WIDTH, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+        LCD_SetColors(ASSEMBLE_RGB(20, 60, 250),LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE1_CENTER_X- NEEDLE_RADIUS-NEEDLE_FRAME_THICKNESS*2,NEEDLE1_CENTER_Y+ NEEDLE_BASE_WIDTH+3,NEEDLE_RADIUS*2+NEEDLE_FRAME_THICKNESS*4,NEEDLE_RADIUS);
+
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE1_CENTER_X- NEEDLE_RADIUS,NEEDLE1_CENTER_Y+ NEEDLE_BASE_WIDTH,NEEDLE_RADIUS*2,NEEDLE_FRAME_THICKNESS-1);
+
+        /* Drawing Needle frame 2 */
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE2_CENTER_X ,NEEDLE2_CENTER_Y,NEEDLE_RADIUS+NEEDLE_FRAME_THICKNESS, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+       
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE2_CENTER_X ,NEEDLE2_CENTER_Y,NEEDLE_BASE_WIDTH, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+        LCD_SetColors(ASSEMBLE_RGB(20, 60, 250),LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE2_CENTER_X- NEEDLE_RADIUS-NEEDLE_FRAME_THICKNESS*2,NEEDLE2_CENTER_Y+ NEEDLE_BASE_WIDTH+3,NEEDLE_RADIUS*2+NEEDLE_FRAME_THICKNESS*4,NEEDLE_RADIUS);
+
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE2_CENTER_X- NEEDLE_RADIUS,NEEDLE2_CENTER_Y+ NEEDLE_BASE_WIDTH,NEEDLE_RADIUS*2,NEEDLE_FRAME_THICKNESS-1);
+
+
+        /* Drawing Needle frame 2 */
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE3_CENTER_X ,NEEDLE3_CENTER_Y,NEEDLE_RADIUS+NEEDLE_FRAME_THICKNESS, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+       
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        DrawThickCircle(NEEDLE3_CENTER_X ,NEEDLE3_CENTER_Y,NEEDLE_BASE_WIDTH, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        
+        LCD_SetLayer(LCD_BACKGROUND_LAYER);
+        LCD_SetColors(ASSEMBLE_RGB(20, 60, 250),LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE3_CENTER_X- NEEDLE_RADIUS-NEEDLE_FRAME_THICKNESS*2,NEEDLE3_CENTER_Y+ NEEDLE_BASE_WIDTH+3,NEEDLE_RADIUS*2+NEEDLE_FRAME_THICKNESS*4,NEEDLE_RADIUS);
+
+        LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_BLACK);
+        LCD_DrawFullRect(NEEDLE3_CENTER_X- NEEDLE_RADIUS,NEEDLE3_CENTER_Y+ NEEDLE_BASE_WIDTH,NEEDLE_RADIUS*2,NEEDLE_FRAME_THICKNESS-1);
+
+        /* Clear drawing buffer */
         PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_WHITE, &rect_screen);
+
+
+
 
       while(1)
       {
+
+        board_ID = PIN_ID_Read();
+
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        sprintf(lcd_text_main," ID :%d         ",board_ID);
+        LCD_DisplayStringLine(LINE(0), (uint8_t*)lcd_text_main);
 
         Demo_GyroReadAngRate (Buffer);
 
@@ -128,16 +227,77 @@ int main(void)
         rect1.xpos = x_len/2+ (int16_t)(GyY)-10;
         rect1.ypos = y_len/2 + (int16_t)(GyX)-10;
 
-        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,160,240,GyZ,GyZ_prev,65,14);
+        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE1_CENTER_X,NEEDLE1_CENTER_Y,GyY,GyY_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
 
-        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,160,80,GyY,GyY_prev,65,14);
+        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,GyZ,GyZ_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+
+        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,GyX,GyX_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+
+            /* Transmit Structure preparation */
+            TxMessage.StdId = (uint32_t)board_ID;
+            TxMessage.ExtId = test_float;
+            TxMessage.RTR = CAN_RTR_REMOTE;
+            TxMessage.IDE = CAN_ID_STD;
+            TxMessage.DLC = 8;
+            TxMessage.Data[0] = test_int++;
+            TxMessage.Data[1] = test_int++;
+            TxMessage.Data[2] = test_int++;
+            TxMessage.Data[3] = test_int++;
+            TxMessage.Data[4] = test_int++;
+            TxMessage.Data[5] = test_int++;
+            TxMessage.Data[6] = test_int++;
+            TxMessage.Data[7] = test_int++;
+            //CAN_Transmit(CAN2, &TxMessage);
+
+            if( CAN_MessagePending(CAN2, CAN_FIFO0) > 1){
+                   GPIO_ToggleBits(GPIOG,GPIO_Pin_14);
+
+            }
 
 
-        CANx_Transmit();
+          // {
+          //   uint8_t status=0;
+
+
+
+          //   while(CAN_TransmitStatus(CAN2, 0) != CAN_TxStatus_Ok ){
+
+          //     status = CAN_TransmitStatus(CAN2, 0);
+          //        if(status == CAN_TxStatus_Failed){
+
+          //         GPIO_ToggleBits(GPIOG,GPIO_Pin_14);
+
+
+          //        }
+          //  }
+
+          // }
+            // TxMessage.StdId = (uint32_t)board_ID;
+            // TxMessage.RTR = CAN_RTR_DATA;
+            // TxMessage.IDE = CAN_ID_STD;
+            // TxMessage.DLC = 8;
+            // TxMessage.Data[0] = 0x01;
+            // TxMessage.Data[1] = 0x01;
+            // TxMessage.Data[2] = 0x01;
+            // TxMessage.Data[3] = 0x01;
+            // TxMessage.Data[4] = 0x01;
+            // TxMessage.Data[5] = 0x01;
+            // TxMessage.Data[6] = 0x01;
+            // TxMessage.Data[7] = 0x01;
+            // CAN_Transmit(CAN2, &TxMessage);
+
+        //CAN2_TransmitGyro(test_int++,test_float);
+
+        test_float += 0.1f;
+
+        GyX_prev = GyX;
         GyZ_prev = GyZ;
         GyY_prev = GyY;
 
         runner += 1.0f;
+
+
+        Delay_1us(100000);
         /* Faster method */
         //MoveAndUpdateRectangular(LCD_FOREGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_BLACK,&prev_rect, &rect1);
         

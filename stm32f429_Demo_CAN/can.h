@@ -17,8 +17,9 @@
 
 
 
-void CANx_Config(void);
-void CANx_Transmit(void);
-void CANx_NVIC_Config(void);
-void CAN1_RX0_IRQHandler(void);
+void CAN2_Config(void);
+void CAN2_Transmit(void);
+void CAN2_NVIC_Config(void);
+void CAN2_RX0_IRQHandler(void);
+void CAN2_TransmitGyro(uint8_t ID,float gyro_value);
 #endif
