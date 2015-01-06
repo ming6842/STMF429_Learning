@@ -34,7 +34,7 @@ int main(void)
 
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   float GyX =0.0f, GyY =0.0f, GyZ =0.0f;
-  float GyY_prev=0.0f;
+  float GyY_prev=0.0f,GyZ_prev=0.0f;
       uint16_t x_len=240;
       uint16_t y_len=320;
 
@@ -56,9 +56,23 @@ int main(void)
     /* LCD Initialization */
     lcd_init();
     lcd_drawBackground(20,60,250);
-    lcd_drawBGPersimmon(20, 60, 250);
+    //lcd_drawBGPersimmon(20, 60, 250);
+
+
+    LCD_SetLayer(LCD_BACKGROUND_LAYER);
+
+    DrawThickCircle(160,240,72, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+    DrawThickCircle(160,80,72, 4,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
 
     LCD_SetLayer(LCD_FOREGROUND_LAYER);
+
+    DrawThickCircle(160,240,14, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+    DrawThickCircle(160,80,14, 6,LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+
+    LCD_SetColors(ASSEMBLE_RGB(20, 60, 250),LCD_COLOR_BLACK);
+    LCD_DrawFullRect(160-80,240-80,60,160);
+    //LCD_DrawFullRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
+
 
     /* LED Initialization */
     LED_Initialization();
@@ -97,10 +111,12 @@ int main(void)
         GyY = GyY*(1.0f - LP_ALPHA) + (Buffer[1] - Y_offset)*LP_ALPHA;
         GyZ = GyZ*(1.0f - LP_ALPHA) + (Buffer[2] - Z_offset)*LP_ALPHA;
 
-        if(GyX > 130.0f) GyX = 130.0f;
-        if(GyX < -130.0f) GyX = -130.0f;
-        if(GyY > 100.0f) GyY = 100.0f;
-        if(GyY < -100.0f) GyY = -100.0f;
+        if(GyX >  90.0f)  GyX =  90.0f;
+        if(GyX < -90.0f)  GyX = -90.0f;
+        if(GyY >  90.0f)  GyY =  90.0f;
+        if(GyY <  -90.0f) GyY = -90.0f;
+        if(GyZ >  90.0f)  GyZ =  90.0f;
+        if(GyZ < -90.0f)  GyZ = -90.0f;
 
         /* Start drawing rectangular */
         prev_rect = rect1;
@@ -110,9 +126,12 @@ int main(void)
         rect1.xpos = x_len/2+ (int16_t)(GyY)-10;
         rect1.ypos = y_len/2 + (int16_t)(GyX)-10;
 
-        MoveNeedle(LCD_FOREGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_BLACK,120,200,GyY*1.5f,GyY_prev*1.5f,90,10);
+        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,160,240,GyZ,GyZ_prev,65,14);
+
+        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,160,80,GyY,GyY_prev,65,14);
 
 
+        GyZ_prev = GyZ;
         GyY_prev = GyY;
 
         runner += 1.0f;
