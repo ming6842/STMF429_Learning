@@ -2,7 +2,7 @@
 #include "can.h"
 #include "main.h"
 
-
+uint8_t can2_rx_isr_flag= 0;
 
 void CAN2_Config(void)
 {
@@ -40,7 +40,7 @@ void CAN2_Config(void)
 	/* CAN Baudrate = 1 MBps (CAN clocked at 30 MHz) */
 	CAN_InitStructure.CAN_BS1 = CAN_BS1_6tq;
 	CAN_InitStructure.CAN_BS2 = CAN_BS2_8tq;
-	CAN_InitStructure.CAN_Prescaler = 1000;
+	CAN_InitStructure.CAN_Prescaler = 10;
 	CAN_Init(CAN2, &CAN_InitStructure);
 	/* CAN filter init */
 	CAN_FilterInitStructure.CAN_FilterNumber = 14;
@@ -123,6 +123,8 @@ void CAN1_RX0_IRQHandler(void)
 void CAN2_RX0_IRQHandler(void)
 {
 	CAN_Receive(CAN2, CAN_FIFO0, &RxMessage);
+
+	 can2_rx_isr_flag= 1;
 	//GPIO_ToggleBits(LED3);
 	// if ((RxMessage.StdId == 0x123)&&(RxMessage.IDE == CAN_ID_STD) && (RxMessage.DLC == 8))
 	// {
@@ -131,4 +133,10 @@ void CAN2_RX0_IRQHandler(void)
 	// 	GPIO_ToggleBits(LED3);
 	// }
 	 	GPIO_ToggleBits(GPIOG,GPIO_Pin_13);
+}
+
+CanRxMsg CAN2_PassRXMessage(void){
+
+
+	return RxMessage;
 }

@@ -15,11 +15,12 @@
 #define CAN_RX_SOURCE GPIO_PinSource12
 #define CAN_TX_SOURCE GPIO_PinSource13
 
-
+extern uint8_t can2_rx_isr_flag;
 
 void CAN2_Config(void);
 void CAN2_Transmit(void);
 void CAN2_NVIC_Config(void);
 void CAN2_RX0_IRQHandler(void);
 void CAN2_TransmitGyro(uint8_t ID,float gyro_value);
+CanRxMsg CAN2_PassRXMessage(void);
 #endif
