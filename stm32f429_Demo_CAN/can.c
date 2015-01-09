@@ -38,9 +38,9 @@ void CAN2_Config(void)
 	CAN_InitStructure.CAN_Mode = CAN_Mode_Normal;
 	CAN_InitStructure.CAN_SJW = CAN_SJW_1tq;
 	/* CAN Baudrate = 1 MBps (CAN clocked at 30 MHz) */
-	CAN_InitStructure.CAN_BS1 = CAN_BS1_6tq;
-	CAN_InitStructure.CAN_BS2 = CAN_BS2_8tq;
-	CAN_InitStructure.CAN_Prescaler = 10;
+	CAN_InitStructure.CAN_BS1 = CAN_BS1_2tq;
+	CAN_InitStructure.CAN_BS2 = CAN_BS2_2tq;
+	CAN_InitStructure.CAN_Prescaler = 9;
 	CAN_Init(CAN2, &CAN_InitStructure);
 	/* CAN filter init */
 	CAN_FilterInitStructure.CAN_FilterNumber = 14;
