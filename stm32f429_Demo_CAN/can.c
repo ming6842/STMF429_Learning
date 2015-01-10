@@ -84,9 +84,9 @@ void CAN2_TransmitGyro(uint8_t ID,float gyro_value){
 	CanTxMsg TxMessage;
 
 	/* Transmit Structure preparation */
-	TxMessage.StdId = (uint32_t)ID;
+	TxMessage.ExtId = (uint32_t)ID | 0x1FFF0000;
 	TxMessage.RTR = CAN_RTR_DATA;
-	TxMessage.IDE = CAN_ID_STD;
+	TxMessage.IDE = CAN_ID_EXT;
 	TxMessage.DLC = 4;
 	TxMessage.Data[0] = p[0];
 	TxMessage.Data[1] = p[1];

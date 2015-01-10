@@ -268,14 +268,14 @@ int main(void)
                 ptr[3] = can2RxMessage.Data[3];
 
 
-                if(can2RxMessage.StdId == 1){
+                if(( can2RxMessage.ExtId &   0x0000FFFF) == 1){
 
                     MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE1_CENTER_X,NEEDLE1_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
                     
-                }else if (can2RxMessage.StdId == 2){
+                }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 2){
                     MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
                     
-                }else if (can2RxMessage.StdId == 3){
+                }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 3){
                     MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
                     
                 }
