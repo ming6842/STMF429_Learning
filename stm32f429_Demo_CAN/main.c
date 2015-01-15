@@ -80,8 +80,10 @@ int main(void)
       uint16_t buffer_screen[x_len][y_len];
 
       /* For gyro receiving  */
-     float receivedGyro=0,receivedGyro_prev=0;
-     uint8_t *ptr = & receivedGyro;
+     float receivedGyro1=0,receivedGyro1_prev=0;
+     float receivedGyro2=0,receivedGyro2_prev=0;
+     float receivedGyro3=0,receivedGyro3_prev=0;
+     uint8_t *ptr = & receivedGyro1;
 
 
       // uint16_t *buf_ptr = &buffer_screen;
@@ -215,6 +217,8 @@ int main(void)
 
         Demo_GyroReadAngRate (Buffer);
 
+        //Delay_1us(1000);
+
         /* MEMS Filtering */
         #define LP_ALPHA 0.1f
         GyX = GyX*(1.0f - LP_ALPHA) + (Buffer[0] - X_offset)*LP_ALPHA;
@@ -244,11 +248,11 @@ int main(void)
 
         }else if(board_ID == 2){
 
-        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,-GyZ,-GyZ_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+          MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_GREEN,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,-GyZ,-GyZ_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
 
         }else {
 
-        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,-GyZ,-GyZ_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+          MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_GREEN,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,-GyZ,-GyZ_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
 
         }
 
@@ -257,36 +261,60 @@ int main(void)
             /* Received Data */
             if( can2_rx_isr_flag ==1){
 
-              can2_rx_isr_flag=0;
+              do{
 
-              can2RxMessage = CAN2_PassRXMessage();
-              GPIO_ToggleBits(GPIOG,GPIO_Pin_14);
+            if( can2_rx_isr_flag ==1){
+                  can2RxMessage = CAN2_PassRXMessage();
+                  can2_rx_isr_flag=0;
+                }else{
 
-                ptr[0] = can2RxMessage.Data[0];
-                ptr[1] = can2RxMessage.Data[1];
-                ptr[2] = can2RxMessage.Data[2];
-                ptr[3] = can2RxMessage.Data[3];
-
-
-                if(( can2RxMessage.ExtId &   0x0000FFFF) == 1){
-
-                    MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE1_CENTER_X,NEEDLE1_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
-                    
-                }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 2){
-                    MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
-                    
-                }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 3){
-                    MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,-receivedGyro,-receivedGyro_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
-                    
+                  CAN_Receive(CAN2, CAN_FIFO0, &can2RxMessage);
                 }
-                receivedGyro_prev = receivedGyro;
-              // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-              // sprintf(lcd_text_main," ID :%d         ", can2RxMessage.StdId);
-              // LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_main);
-              // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
-              // sprintf(lcd_text_main," Data :%f        ", receivedGyro);
-              // LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_main);
+                  GPIO_ToggleBits(GPIOG,GPIO_Pin_14);
 
+                    ptr[0] = can2RxMessage.Data[0];
+                    ptr[1] = can2RxMessage.Data[1];
+                    ptr[2] = can2RxMessage.Data[2];
+                    ptr[3] = can2RxMessage.Data[3];
+
+
+                    if(( can2RxMessage.ExtId &   0x0000FFFF) == 1){
+                        ptr = & receivedGyro1;
+                    ptr[0] = can2RxMessage.Data[0];
+                    ptr[1] = can2RxMessage.Data[1];
+                    ptr[2] = can2RxMessage.Data[2];
+                    ptr[3] = can2RxMessage.Data[3];
+
+
+                        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE1_CENTER_X,NEEDLE1_CENTER_Y,-receivedGyro1,-receivedGyro1_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+                        
+                    receivedGyro1_prev = receivedGyro1;
+                    }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 2){
+                        ptr = & receivedGyro2;
+                    ptr[0] = can2RxMessage.Data[0];
+                    ptr[1] = can2RxMessage.Data[1];
+                    ptr[2] = can2RxMessage.Data[2];
+                    ptr[3] = can2RxMessage.Data[3];
+                        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE2_CENTER_X,NEEDLE2_CENTER_Y,-receivedGyro2,-receivedGyro2_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+                        
+                    receivedGyro2_prev = receivedGyro2;
+                    }else if (( can2RxMessage.ExtId & 0x0000FFFF) == 3){
+                        ptr = & receivedGyro3;
+                    ptr[0] = can2RxMessage.Data[0];
+                    ptr[1] = can2RxMessage.Data[1];
+                    ptr[2] = can2RxMessage.Data[2];
+                    ptr[3] = can2RxMessage.Data[3];
+                        MoveNeedle(LCD_BACKGROUND_LAYER,&buffer_screen,x_len,y_len,LCD_COLOR_RED,NEEDLE3_CENTER_X,NEEDLE3_CENTER_Y,-receivedGyro3,-receivedGyro3_prev,NEEDLE_RADIUS,NEEDLE_BASE_WIDTH);
+                        
+                    receivedGyro3_prev = receivedGyro3;
+                    }
+                  // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+                  // sprintf(lcd_text_main," ID :%d         ", can2RxMessage.StdId);
+                  // LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_main);
+                  // LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+                  // sprintf(lcd_text_main," Data :%f        ", receivedGyro);
+                  // LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_main);
+                }while(CAN_MessagePending(CAN2, CAN_FIFO0) > 0);
 
 
 
