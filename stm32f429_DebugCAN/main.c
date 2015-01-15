@@ -2,7 +2,7 @@
 #include "gyro.h"
 #include "main.h"
 #include "stm32f4xx_can.h"
-
+#include "hmc5983_can.h"
 float Buffer[6];
 uint8_t board_ID;
 
@@ -67,7 +67,7 @@ uint8_t PIN_ID_Read(void){
 
 int main(void)
 {
-
+  imu_unscaled_data_t imu_raw_data;
             CanTxMsg TxMessage;
   float X_offset =0.0f,Y_offset =0.0f,Z_offset =0.0f;
   float test_float=0.0f; uint8_t test_int=0;
@@ -201,6 +201,48 @@ int main(void)
         /* Clear drawing buffer */
         PadRectangular(&buffer_screen,x_len,y_len,LCD_COLOR_WHITE, &rect_screen);
 
+        while(1){
+
+
+        can2RxMessage.ExtId;
+        can2RxMessage.DLC;
+        can2RxMessage.Data[2];
+        can2RxMessage.Data[3];
+
+            if( can2_rx_isr_flag ==1){
+
+              can2_rx_isr_flag=0;
+              can2RxMessage = CAN2_PassRXMessage();
+              hmc5983_can_checkAndUpdateIMU(&imu_raw_data,&can2RxMessage);
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        sprintf(lcd_text_main," CAN Demo ID:%d    ",board_ID);
+        LCD_DisplayStringLine(LINE(0), (uint8_t*)lcd_text_main);
+        LCD_SetColors(LCD_COLOR_BLACK,LCD_COLOR_WHITE-1);
+        sprintf(lcd_text_main," DATA ID:%lX    ",can2RxMessage.ExtId);
+        LCD_DisplayStringLine(LINE(1), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data1 :%X    ",can2RxMessage.Data[0]);
+        LCD_DisplayStringLine(LINE(2), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data2 :%X    ",can2RxMessage.Data[1]);
+        LCD_DisplayStringLine(LINE(3), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data3 :%X    ",can2RxMessage.Data[2]);
+        LCD_DisplayStringLine(LINE(4), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data4 :%X    ",can2RxMessage.Data[3]);
+        LCD_DisplayStringLine(LINE(5), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data5 :%X    ",can2RxMessage.Data[4]);
+        LCD_DisplayStringLine(LINE(6), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," Data5 :%X    ",can2RxMessage.Data[5]);
+        LCD_DisplayStringLine(LINE(7), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," MagX :%d    ",imu_raw_data.mag[0]);
+        LCD_DisplayStringLine(LINE(8), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," MagY :%d    ",imu_raw_data.mag[1]);
+        LCD_DisplayStringLine(LINE(9), (uint8_t*)lcd_text_main);
+        sprintf(lcd_text_main," MagZ :%d    ",imu_raw_data.mag[2]);
+        LCD_DisplayStringLine(LINE(10), (uint8_t*)lcd_text_main);
+}
+
+
+
+        }
 
 
 

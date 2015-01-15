@@ -86,6 +86,7 @@ OBJS=	./system_stm32f4xx.o \
         ./main.o \
         ./lcd.o \
         ./can.o \
+        ./hmc5983_can.o \
         ./gyro.o \
         ./lcd_glitchless.o \
         $(STARTUP) 
